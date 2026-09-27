@@ -104,16 +104,18 @@ Future<void> _buildLinuxRelease(String projectRoot) async {
 
   await _run('flutter', args, cwd: projectRoot);
 
+  // sentry_flutter 10 默认切到 breakpad 后不再产出 crashpad_handler，
+  // 该文件仅在使用 crashpad 后端时存在，缺失属于正常情况。
   final crashpad = File(
     '$projectRoot${Platform.pathSeparator}build${Platform.pathSeparator}linux'
     '${Platform.pathSeparator}x64${Platform.pathSeparator}release'
     '${Platform.pathSeparator}bundle${Platform.pathSeparator}lib'
     '${Platform.pathSeparator}crashpad_handler',
   );
-  // sentry_flutter 10.0.0-rc.0 起 Linux 默认后端改为 breakpad（进程内，不再产出
-  // crashpad_handler），所以这里只能「有就补执行位」，不能再当成硬性前置条件。
   if (await crashpad.exists()) {
     await _run('chmod', ['+x', crashpad.path], cwd: projectRoot);
+  } else {
+    _log('crashpad_handler not bundled (non-crashpad backend?), skip chmod.', color: _yellow);
   }
 }
 
