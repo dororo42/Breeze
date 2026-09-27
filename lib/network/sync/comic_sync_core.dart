@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart';
 import 'package:encrypter_plus/encrypter_plus.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:uuid/uuid.dart';
 import 'package:zephyr/config/global/global.dart';
 import 'package:zephyr/main.dart';
@@ -649,7 +650,7 @@ class ComicSyncCore {
     final queue = [rootSyncId];
     while (queue.isNotEmpty) {
       final parentId = queue.removeLast();
-      for (final child in childrenByParent[parentId] ?? const []) {
+      for (final child in childrenByParent[parentId] ?? const <ComicFolder>[]) {
         if (result.add(child.syncId)) queue.add(child.syncId);
       }
     }
@@ -1110,18 +1111,70 @@ class ComicSyncCore {
     }
   }
 
+  /// AES-CTR 的初始计数块长度（16 字节）与新版载荷头长度（magic + nonce）。
+  static const int _nonceLength = 16;
+  static const int _headerLength = 4 + _nonceLength;
+  static const List<int> _payloadMagic = <int>[
+    0x42,
+    0x53,
+    0x59,
+    0x32,
+  ]; // "BSY2"
+  static const String _legacyNonce = '7qFwTxwH&iyuw35f';
+
+  static Key get _aesKey => Key.fromUtf8('XY!Ex3j3hP^BGPFanYEjBA!L!oD2kkCN');
+
+  /// nonce 由明文派生而不是固定：AES-CTR 下密钥流 = E(nonce) ⊕ E(nonce+1) …，
+  /// 所有载荷共用同一 nonce 等于共用同一密钥流，两个密文相减即两段明文相减；
+  /// 而同步载荷是高度结构化的 JSON，相邻版本前缀几乎完全相同，泄露量最大。
+  /// 这里刻意用 HMAC(key, 明文) 而不是随机数，是为了让同一明文永远得到同一密文——
+  /// 上层用密文 MD5 做“内容是否变化”的判据和内容寻址的文件选择，随机化会让每次
+  /// 同步都判定为有变化并多写一个远端文件。
+  static Uint8List _deriveNonce(List<int> plain) {
+    final digest = Hmac(sha256, _aesKey.bytes).convert(plain).bytes;
+    return Uint8List.fromList(digest.sublist(0, _nonceLength));
+  }
+
+  /// 载荷加解密的测试入口：`encodeEncryptedPayload` 还要过一遍 Rust 侧压缩，
+  /// 宿主测试环境里加载不到那个 cdylib。
+  @visibleForTesting
+  static List<int> encryptPayloadForTest(List<int> plain) =>
+      _encryptBytes(plain);
+
+  @visibleForTesting
+  static List<int> decryptPayloadForTest(List<int> encrypted) =>
+      _decryptBytes(encrypted);
+
   static List<int> _encryptBytes(List<int> bytes) {
-    final key = Key.fromUtf8('XY!Ex3j3hP^BGPFanYEjBA!L!oD2kkCN');
-    final iv = IV.fromUtf8('7qFwTxwH&iyuw35f');
-    final encrypter = Encrypter(AES(key, mode: AESMode.ctr));
-    return encrypter.encryptBytes(bytes, iv: iv).bytes;
+    final nonce = _deriveNonce(bytes);
+    final body = Encrypter(
+      AES(_aesKey, mode: AESMode.ctr),
+    ).encryptBytes(bytes, iv: IV(nonce)).bytes;
+    return <int>[..._payloadMagic, ...nonce, ...body];
   }
 
   static List<int> _decryptBytes(List<int> bytes) {
-    final key = Key.fromUtf8('XY!Ex3j3hP^BGPFanYEjBA!L!oD2kkCN');
-    final iv = IV.fromUtf8('7qFwTxwH&iyuw35f');
-    final encrypter = Encrypter(AES(key, mode: AESMode.ctr));
-    return encrypter.decryptBytes(Encrypted(Uint8List.fromList(bytes)), iv: iv);
+    final encrypter = Encrypter(AES(_aesKey, mode: AESMode.ctr));
+    if (bytes.length > _headerLength && _startsMagic(bytes)) {
+      final nonce = Uint8List.fromList(bytes.sublist(4, _headerLength));
+      final body = bytes.sublist(_headerLength);
+      return encrypter.decryptBytes(
+        Encrypted(Uint8List.fromList(body)),
+        iv: IV(nonce),
+      );
+    }
+    // 旧版载荷：固定 nonce、无载荷头。
+    return encrypter.decryptBytes(
+      Encrypted(Uint8List.fromList(bytes)),
+      iv: IV.fromUtf8(_legacyNonce),
+    );
+  }
+
+  static bool _startsMagic(List<int> bytes) {
+    for (var i = 0; i < _payloadMagic.length; i++) {
+      if (bytes[i] != _payloadMagic[i]) return false;
+    }
+    return true;
   }
 
   static Map<String, dynamic> _stripLocalId(Map<String, dynamic> json) {
