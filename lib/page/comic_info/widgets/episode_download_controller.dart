@@ -115,10 +115,15 @@ class EpisodeDownloadController {
 
   void _loadInitial() {
     final record = _repository.findDownloadRecord(_from, _comicId);
-    final tasks = objectbox.downloadTaskBox
+    final taskQuery = objectbox.downloadTaskBox
         .query(DownloadTask_.comicId.equals(_comicId))
-        .build()
-        .find();
+        .build();
+    late final List<DownloadTask> tasks;
+    try {
+      tasks = taskQuery.find();
+    } finally {
+      taskQuery.close();
+    }
     _updateStatus(
       downloadedIds: _resolveDownloadedIds(record),
       taskSnaps: _buildTaskSnaps(tasks),

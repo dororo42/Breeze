@@ -152,9 +152,18 @@ class DownloadQueueManager {
     final taskKey = downloadTaskKeyOf(dbTask);
     // 先排空在途写，再落取消态，防止旧 checkpoint 复活任务。
     await _taskRepository.flushTaskWrites(taskKey);
+    final payload = _taskRepository.readPayload(dbTask);
     dbTask.status = t.download.statusCancelling;
     dbTask.isDownloading = false;
     dbTask.isCompleted = true;
+    if (payload != null) {
+      // stateCode 是机器可读状态；status 是给用户看的本地化文案，
+      // 取消判定只能依赖前者。
+      dbTask.taskInfo = payload.copyWith(
+        stateCode: 'cancelled',
+        phaseCode: 'cancelled',
+      );
+    }
     objectbox.downloadTaskBox.put(dbTask);
     triggerDownloadCancelSignal(taskKey);
 
@@ -172,11 +181,16 @@ class DownloadQueueManager {
   }
 
   /// 队列中剩余任务数
-  int get queueLength => objectbox.downloadTaskBox
-      .query(DownloadTask_.isCompleted.equals(false))
-      .build()
-      .find()
-      .length;
+  int get queueLength {
+    final query = objectbox.downloadTaskBox
+        .query(DownloadTask_.isCompleted.equals(false))
+        .build();
+    try {
+      return query.count();
+    } finally {
+      query.close();
+    }
+  }
 
   List<DownloadTask> _runnableTasks() {
     return _taskRepository
@@ -637,16 +651,18 @@ class DownloadQueueManager {
 
   /// 删除所有已完成的任务记录
   void _removeAllCompletedTasks() {
-    final completedTasks = objectbox.downloadTaskBox
+    final completedQuery = objectbox.downloadTaskBox
         .query(DownloadTask_.isCompleted.equals(true))
-        .build()
-        .find();
+        .build();
+    late final int removedCount;
+    try {
+      removedCount = completedQuery.remove();
+    } finally {
+      completedQuery.close();
+    }
 
-    if (completedTasks.isNotEmpty) {
-      objectbox.downloadTaskBox.removeMany(
-        completedTasks.map((e) => e.id).toList(),
-      );
-      logger.d('清理了 ${completedTasks.length} 个已完成的任务记录');
+    if (removedCount > 0) {
+      logger.d('清理了 $removedCount 个已完成的任务记录');
     }
   }
 }
@@ -667,12 +683,8 @@ bool _isTaskCancelledOrMarked(String taskKey, Object error) {
     return true;
   }
 
-  final status = task.status;
-  final isMarkedCancelled =
-      task.isCompleted && !task.isDownloading && status.contains('取消') ||
-      status.toLowerCase().contains('cancel');
-
-  return isMarkedCancelled;
+  return const DownloadTaskRepository().readPayload(task)?.stateCode ==
+      'cancelled';
 }
 
 bool _isTaskGoneOrCompleted(String taskKey) {

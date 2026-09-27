@@ -1,4 +1,3 @@
-import 'package:pool/pool.dart';
 import 'package:zephyr/i18n/strings.g.dart';
 import 'package:zephyr/network/http/picture/picture.dart';
 import 'package:zephyr/network/http/plugin/unified_comic_plugin.dart';
@@ -158,7 +157,6 @@ Future<DownloadImageJobsResult> downloadImageJobs({
     );
   }
 
-  final pool = Pool(concurrency ?? 5);
   final workerCount = concurrency ?? 5;
   var progress = 0;
   var downloaded = 0;
@@ -173,18 +171,12 @@ Future<DownloadImageJobsResult> downloadImageJobs({
     try {
       while (firstError == null) {
         await ensureTaskRunning();
-        DownloadImageJob? job;
-        await pool.withResource(() async {
-          if (nextIndex >= jobs.length) {
-            return;
-          }
-          job = jobs[nextIndex];
-          nextIndex += 1;
-        });
-        final currentJob = job;
-        if (currentJob == null) {
+        if (nextIndex >= jobs.length) {
           return;
         }
+        // 单 isolate 内读取与自增之间无 await，无需额外加锁。
+        final currentJob = jobs[nextIndex];
+        nextIndex += 1;
         var jobSkipped = false;
         try {
           final result = await _downloadSingleJob(
