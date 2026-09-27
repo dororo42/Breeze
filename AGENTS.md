@@ -388,7 +388,7 @@ Android 端已彻底从 JNI + ncnn 共享库方案切换到 **waifu2x CLI** 方�
 | 新增数据源/插件支持 | `lib/network/http/plugin/unified_comic_plugin.dart`、`rust/src/api/qjs.rs` |
 | 修改数据库模型 | `lib/object_box/model.dart`，然后运行代码生成 |
 | 修改全局设置 | `lib/config/global/global_setting.dart` |
-| 修改墨水屏适配 | `lib/platform/eink/`（检测与整屏刷新）、`lib/page/setting/global/eink_setting_page.dart`、`global_setting.dart` 的 `EInkSettingState`；路由去动画走 `lib/config/router/router.dart` 的 `defaultRouteType`（`RouteType.material` 没有时长开关，只能用 `RouteType.custom` + 空 transitionsBuilder） |
+| 修改墨水屏适配 | `lib/platform/eink/`（检测与整屏刷新）、`lib/page/setting/global/eink_setting_page.dart`、`global_setting.dart` 的 `EInkSettingState`；路由去动画走 `lib/config/router/router.dart` 的 `defaultRouteType`（`RouteType.material` 没有时长开关，只能用 `RouteType.custom` + 空 transitionsBuilder）。另有三处压成 `Duration.zero` 的装饰动画跟着 `eInkSetting.enabled` 走：阅读页顶/底控制条的 `AnimatedSlide`（`widgets/chrome/app_bar.dart`、`widgets/chrome/bottom.dart`）、自动阅读按钮的 `AnimatedPositioned` + `AnimatedSwitcher`（`view/parts/comic_read_auto_read_part.dart`），以及全局水波纹（`main.dart` 两个主题的 `splashFactory: NoSplash.splashFactory`，靠 `copyWith(splashFactory: null)` 的保留语义在非墨水屏时不改默认值）。这些不走构建期镜像 flag，改动时注意别漏。 |
 | 在不持有 context 处取全局 Overlay / 弹窗 | `navigatorKey`（`lib/main.dart`）——它必须是 `appRouter.navigatorKey` 的别名。`MaterialApp.router` 会自建 Navigator，外部传入的独立 `GlobalKey` 挂不上去，`currentState` 恒为 null，取 overlay 的代码会**静默失效而不是报错** |
 | 修改图片/下载逻辑 | `lib/service/download/`、`lib/network/http/picture/` |
 | 修改 Rust 侧能力 | `rust/src/api/`、`rust/src/qjs/`，然后运行 FRB 生成 |
