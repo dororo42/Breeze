@@ -148,6 +148,10 @@ jobs:
         run: |
           fvm dart ./script/build_apk.dart
 
+      - name: 校验 Android native 重定位兼容性
+        run: |
+          python3 script/check_android_native_relocs.py build/app/outputs/flutter-apk/*.apk
+
       - name: 上传 Android 产物
         uses: actions/upload-artifact@v6
         with:
