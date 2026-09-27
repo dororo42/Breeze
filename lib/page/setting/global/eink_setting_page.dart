@@ -50,7 +50,9 @@ class _EInkSettingPageState extends State<EInkSettingPage> {
                   detected ? Icons.check_circle_outline : Icons.help_outline,
                 ),
                 title: Text(
-                  detected ? t.settings.einkDetected : t.settings.einkNotDetected,
+                  detected
+                      ? t.settings.einkDetected
+                      : t.settings.einkNotDetected,
                 ),
               );
             },
@@ -67,7 +69,8 @@ class _EInkSettingPageState extends State<EInkSettingPage> {
                   enabled: value,
                   detectionHandled: true,
                 ),
-                // 开启时把阅读侧的动画与白屏开关一起打开；单项仍可单独调整。
+                // 开启时把阅读侧已有的「无动画」「墨水屏优化」一并打开；
+                // 这两项只在阅读设置里单独调整，本页不重复列出。
                 readSetting: value
                     ? current.readSetting.copyWith(
                         noAnimation: true,
@@ -94,16 +97,6 @@ class _EInkSettingPageState extends State<EInkSettingPage> {
               ),
             ),
             SwitchListTile(
-              secondary: const Icon(Icons.skip_next_outlined),
-              title: Text(t.settings.einkNoPageAnimation),
-              subtitle: Text(t.settings.einkNoPageAnimationSubtitle),
-              thumbIcon: kSettingSwitchThumbIcon,
-              value: readSetting.noAnimation,
-              onChanged: (value) => cubit.updateReadSetting(
-                (current) => current.copyWith(noAnimation: value),
-              ),
-            ),
-            SwitchListTile(
               secondary: const Icon(Icons.vertical_align_bottom_outlined),
               title: Text(t.settings.einkNoScrollBounce),
               subtitle: Text(t.settings.einkNoScrollBounceSubtitle),
@@ -119,37 +112,13 @@ class _EInkSettingPageState extends State<EInkSettingPage> {
               icon: Icons.download_outlined,
             ),
             SwitchListTile(
-              secondary: const Icon(Icons.crop_original_outlined),
-              title: Text(t.settings.einkBlankBeforeImage),
-              subtitle: Text(t.settings.einkBlankBeforeImageSubtitle),
+              secondary: const Icon(Icons.hourglass_empty_outlined),
+              title: Text(t.settings.einkNoSpinner),
+              subtitle: Text(t.settings.einkNoSpinnerSubtitle),
               thumbIcon: kSettingSwitchThumbIcon,
-              value: readSetting.einkOptimization,
-              onChanged: (value) => cubit.updateReadSetting(
-                (current) => current.copyWith(einkOptimization: value),
-              ),
-            ),
-            if (readSetting.einkOptimization)
-              _dropdownTile(
-                icon: Icons.timelapse_outlined,
-                title: t.settings.einkBlankDelay,
-                value: _blankDelayOptions.contains(readSetting.einkDelayMs)
-                    ? readSetting.einkDelayMs
-                    : _blankDelayOptions.first,
-                values: _blankDelayOptions,
-                label: (value) => '$value ${t.reader.milliseconds}',
-                onChanged: (value) => cubit.updateReadSetting(
-                  (current) => current.copyWith(einkDelayMs: value),
-                ),
-              ),
-            _dropdownTile(
-              icon: Icons.collections_outlined,
-              title: t.settings.einkPreloadCount,
-              subtitle: t.settings.einkPreloadCountSubtitle,
-              value: readSetting.preloadImageCount,
-              values: _preloadOptions,
-              label: (value) => '$value',
-              onChanged: (value) => cubit.updateReadSetting(
-                (current) => current.copyWith(preloadImageCount: value),
+              value: eink.noLoadingSpinner,
+              onChanged: (value) => cubit.updateEInkSetting(
+                (current) => current.copyWith(noLoadingSpinner: value),
               ),
             ),
             settingSectionTitle(
@@ -189,16 +158,6 @@ class _EInkSettingPageState extends State<EInkSettingPage> {
                 (current) => current.copyWith(showRefreshButton: value),
               ),
             ),
-            SwitchListTile(
-              secondary: const Icon(Icons.hourglass_empty_outlined),
-              title: Text(t.settings.einkNoSpinner),
-              subtitle: Text(t.settings.einkNoSpinnerSubtitle),
-              thumbIcon: kSettingSwitchThumbIcon,
-              value: eink.noLoadingSpinner,
-              onChanged: (value) => cubit.updateEInkSetting(
-                (current) => current.copyWith(noLoadingSpinner: value),
-              ),
-            ),
             if (eink.canFullRefresh)
               ListTile(
                 leading: const Icon(Icons.flash_on_outlined),
@@ -219,8 +178,6 @@ class _EInkSettingPageState extends State<EInkSettingPage> {
     );
   }
 
-  static const List<int> _blankDelayOptions = <int>[50, 100, 150, 200, 300, 500];
-  static const List<int> _preloadOptions = <int>[3, 4, 6, 8, 10, 12];
   static const List<int> _autoRefreshOptions = <int>[0, 2, 3, 5, 8, 10, 15, 20];
 
   Widget _dropdownTile<T>({

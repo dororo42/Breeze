@@ -794,12 +794,6 @@ class Translations$settings$zh_CN {
 	/// zh-CN: '进入和退出页面直接出图，不做滑动淡入'
 	String get einkNoRouteTransitionSubtitle => '进入和退出页面直接出图，不做滑动淡入';
 
-	/// zh-CN: '去除翻页动画'
-	String get einkNoPageAnimation => '去除翻页动画';
-
-	/// zh-CN: '翻页改为直接跳转，不留中间帧'
-	String get einkNoPageAnimationSubtitle => '翻页改为直接跳转，不留中间帧';
-
 	/// zh-CN: '去除滚动回弹'
 	String get einkNoScrollBounce => '去除滚动回弹';
 
@@ -808,21 +802,6 @@ class Translations$settings$zh_CN {
 
 	/// zh-CN: '加载'
 	String get einkSectionLoading => '加载';
-
-	/// zh-CN: '翻页先白屏'
-	String get einkBlankBeforeImage => '翻页先白屏';
-
-	/// zh-CN: '白屏一帧再出图，减少残影'
-	String get einkBlankBeforeImageSubtitle => '白屏一帧再出图，减少残影';
-
-	/// zh-CN: '白屏时长'
-	String get einkBlankDelay => '白屏时长';
-
-	/// zh-CN: '预加载图片数量'
-	String get einkPreloadCount => '预加载图片数量';
-
-	/// zh-CN: '墨水屏刷新慢，多预载几张可以让翻页更接近即时'
-	String get einkPreloadCountSubtitle => '墨水屏刷新慢，多预载几张可以让翻页更接近即时';
 
 	/// zh-CN: '刷新'
 	String get einkSectionRefresh => '刷新';
@@ -4201,16 +4180,9 @@ extension on Translations {
 			'settings.einkSectionAnimation' => '动画与过渡',
 			'settings.einkNoRouteTransition' => '去除页面切换动画',
 			'settings.einkNoRouteTransitionSubtitle' => '进入和退出页面直接出图，不做滑动淡入',
-			'settings.einkNoPageAnimation' => '去除翻页动画',
-			'settings.einkNoPageAnimationSubtitle' => '翻页改为直接跳转，不留中间帧',
 			'settings.einkNoScrollBounce' => '去除滚动回弹',
 			'settings.einkNoScrollBounceSubtitle' => '长图模式拖到边界直接停住',
 			'settings.einkSectionLoading' => '加载',
-			'settings.einkBlankBeforeImage' => '翻页先白屏',
-			'settings.einkBlankBeforeImageSubtitle' => '白屏一帧再出图，减少残影',
-			'settings.einkBlankDelay' => '白屏时长',
-			'settings.einkPreloadCount' => '预加载图片数量',
-			'settings.einkPreloadCountSubtitle' => '墨水屏刷新慢，多预载几张可以让翻页更接近即时',
 			'settings.einkSectionRefresh' => '刷新',
 			'settings.einkRefreshMode' => '整屏刷新方式',
 			'settings.einkRefreshNone' => '不刷新',
@@ -4486,8 +4458,6 @@ extension on Translations {
 			'comicInfo.resolveComicIdFailed' => ({required Object type}) => '无法解析阅读 comicId: ${type}',
 			'comicInfo.resolveEpsCountFailed' => ({required Object type}) => '无法解析阅读章节数: ${type}',
 			'reader.pageMode' => '翻页模式',
-			_ => null,
-		} ?? switch (path) {
 			'reader.fullscreen' => '全屏模式',
 			'reader.leftHandMode' => '左手模式',
 			'reader.rightHandMode' => '右手模式',
@@ -4495,6 +4465,8 @@ extension on Translations {
 			'reader.reverseHorizontalPageTurnSubtitle' => '交换左右方向键的翻页方向，适合从右到左的日漫',
 			'reader.webtoonTapPageTurn' => '条漫点击翻动',
 			'reader.enableWebtoonTapPageTurn' => '允许点击上下翻动',
+			_ => null,
+		} ?? switch (path) {
 			'reader.webtoonTapPageTurnSubtitle' => '条漫模式下点击上方/下方区域翻动，中央区域仍用于打开操作栏',
 			'reader.readingMode' => '阅读模式',
 			'reader.perComicReadMode' => '启用本漫画设置',
@@ -5000,8 +4972,6 @@ extension on Translations {
 			'discover.customOrder' => '自定义插件顺序',
 			'discover.resetOrder' => '恢复默认顺序',
 			'discover.noPlugins' => '暂无可用插件，去插件商店安装一个吧~',
-			_ => null,
-		} ?? switch (path) {
 			'discover.pluginStore' => '插件商店',
 			'discover.browseInstall' => '浏览安装',
 			'discover.noPluginForSearch' => '暂无可用插件，无法搜索',
@@ -5009,6 +4979,8 @@ extension on Translations {
 			'discover.pluginCapability' => '插件能力',
 			'discover.disabled' => '已关闭',
 			'discover.unnamed' => '未命名',
+			_ => null,
+		} ?? switch (path) {
 			'discover.pluginEnableFailed' => ({required Object error}) => '插件启用失败: ${error}',
 			'discover.pluginCloseFailed' => ({required Object error}) => '插件关闭失败: ${error}',
 			'discover.pluginDebugLoadFailed' => ({required Object error}) => '插件调试加载失败，已回退数据库: ${error}',

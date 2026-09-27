@@ -336,16 +336,9 @@ class _Translations$settings$en_US extends Translations$settings$zh_CN {
 	@override String get einkSectionAnimation => 'Animation & transitions';
 	@override String get einkNoRouteTransition => 'Remove page transition animation';
 	@override String get einkNoRouteTransitionSubtitle => 'Show pages instantly instead of sliding and fading';
-	@override String get einkNoPageAnimation => 'Remove page-turn animation';
-	@override String get einkNoPageAnimationSubtitle => 'Jump straight to the next page without in-between frames';
 	@override String get einkNoScrollBounce => 'Remove scroll overscroll';
 	@override String get einkNoScrollBounceSubtitle => 'Stop at the edge instead of bouncing in webtoon mode';
 	@override String get einkSectionLoading => 'Loading';
-	@override String get einkBlankBeforeImage => 'Blank before image';
-	@override String get einkBlankBeforeImageSubtitle => 'Show a blank frame first to reduce ghosting';
-	@override String get einkBlankDelay => 'Blank duration';
-	@override String get einkPreloadCount => 'Preloaded images';
-	@override String get einkPreloadCountSubtitle => 'E-ink refreshes slowly, so preloading more pages makes turning feel instant';
 	@override String get einkSectionRefresh => 'Refresh';
 	@override String get einkRefreshMode => 'Full-screen refresh';
 	@override String get einkRefreshNone => 'Disabled';
@@ -1809,16 +1802,9 @@ extension on TranslationsEnUs {
 			'settings.einkSectionAnimation' => 'Animation & transitions',
 			'settings.einkNoRouteTransition' => 'Remove page transition animation',
 			'settings.einkNoRouteTransitionSubtitle' => 'Show pages instantly instead of sliding and fading',
-			'settings.einkNoPageAnimation' => 'Remove page-turn animation',
-			'settings.einkNoPageAnimationSubtitle' => 'Jump straight to the next page without in-between frames',
 			'settings.einkNoScrollBounce' => 'Remove scroll overscroll',
 			'settings.einkNoScrollBounceSubtitle' => 'Stop at the edge instead of bouncing in webtoon mode',
 			'settings.einkSectionLoading' => 'Loading',
-			'settings.einkBlankBeforeImage' => 'Blank before image',
-			'settings.einkBlankBeforeImageSubtitle' => 'Show a blank frame first to reduce ghosting',
-			'settings.einkBlankDelay' => 'Blank duration',
-			'settings.einkPreloadCount' => 'Preloaded images',
-			'settings.einkPreloadCountSubtitle' => 'E-ink refreshes slowly, so preloading more pages makes turning feel instant',
 			'settings.einkSectionRefresh' => 'Refresh',
 			'settings.einkRefreshMode' => 'Full-screen refresh',
 			'settings.einkRefreshNone' => 'Disabled',
@@ -2094,8 +2080,6 @@ extension on TranslationsEnUs {
 			'comicInfo.resolveEpsCountFailed' => ({required Object type}) => 'Cannot resolve episode count for reading: ${type}',
 			'reader.pageMode' => 'Page turn mode',
 			'reader.fullscreen' => 'Fullscreen',
-			_ => null,
-		} ?? switch (path) {
 			'reader.leftHandMode' => 'Left-hand mode',
 			'reader.rightHandMode' => 'Right-hand mode',
 			'reader.reverseHorizontalPageTurn' => 'Reverse arrow keys',
@@ -2103,6 +2087,8 @@ extension on TranslationsEnUs {
 			'reader.webtoonTapPageTurn' => 'Webtoon tap navigation',
 			'reader.enableWebtoonTapPageTurn' => 'Allow tapping to turn vertically',
 			'reader.webtoonTapPageTurnSubtitle' => 'Tap the upper/lower area in webtoon mode; the center still opens the controls',
+			_ => null,
+		} ?? switch (path) {
 			'reader.readingMode' => 'Reading mode',
 			'reader.perComicReadMode' => 'Enable per-comic settings',
 			'reader.perComicReadModeSubtitle' => 'Only applies to the current comic',
@@ -2608,8 +2594,6 @@ extension on TranslationsEnUs {
 			'discover.resetOrder' => 'Reset order',
 			'discover.noPlugins' => 'No plugins available. Go to the plugin store to install one~',
 			'discover.pluginStore' => 'Plugin Store',
-			_ => null,
-		} ?? switch (path) {
 			'discover.browseInstall' => 'Browse & Install',
 			'discover.noPluginForSearch' => 'No plugins available, cannot search',
 			'discover.pluginInfoLoadFailed' => ({required Object error}) => 'Failed to load plugin info: ${error}',
@@ -2617,6 +2601,8 @@ extension on TranslationsEnUs {
 			'discover.disabled' => 'Disabled',
 			'discover.unnamed' => 'Unnamed',
 			'discover.pluginEnableFailed' => ({required Object error}) => 'Failed to enable plugin: ${error}',
+			_ => null,
+		} ?? switch (path) {
 			'discover.pluginCloseFailed' => ({required Object error}) => 'Failed to disable plugin: ${error}',
 			'discover.pluginDebugLoadFailed' => ({required Object error}) => 'Plugin debug load failed, reverted to database: ${error}',
 			'searchResult.enterPageNumber' => 'Enter page number',
