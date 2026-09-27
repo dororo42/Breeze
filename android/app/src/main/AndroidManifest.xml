@@ -4,10 +4,14 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- 通知权限 -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <!-- 读取存储权限，对于Android 13以下版本 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <!-- 写入存储权限，对于Android 13以下版本 -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- 读取存储权限，仅 Android 10 (API 29) 及以下会申请：
+         lib/util/permission.dart 在 sdkInt >= 30 时走 MANAGE_EXTERNAL_STORAGE 分支，
+         更高版本保留这两个权限只会在 Play 审核与用户侧形成无用的攻击面。 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+    <!-- 写入存储权限，同上 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
     <!-- 读取媒体图片权限，Android 13及以上 -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <!-- 读取媒体视频权限，Android 13及以上 -->
@@ -82,9 +86,11 @@
         </receiver>
 
         <!-- 前台服务声明，flutter_foreground_task 库要求的声明 -->
+        <!-- 运行时只以 dataSync 启动（见 foreground_task_service.dart 的 serviceTypes），
+             声明多余类型会触发 Android 14+ 的权限校验与 Play 政策审查 -->
         <service
             android:name="com.pravera.flutter_foreground_task.service.ForegroundService"
-            android:foregroundServiceType="dataSync|remoteMessaging"
+            android:foregroundServiceType="dataSync"
             android:exported="false" />
 
         <!-- flutter_local_notifications -->

@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  刻意保持 cleartextTrafficPermitted="true"：本 app 的图源与插件由用户自行添加，
+  大量第三方站点仍是 http-only，收紧成域名白名单等于砍掉核心用法。
+  这条宽松只适用于"取数据"路径。会被当作代码执行的内容（插件 bundle）不走这里，
+  由 Rust/Dart 侧强制校验证书，见 rust/src/qjs/mod.rs 与 lib/network/http/wind_http.dart
+  的 fetchBundle()，以及 AGENTS.md §9。
+-->
 <network-security-config>
 
     <base-config cleartextTrafficPermitted="true"/>
