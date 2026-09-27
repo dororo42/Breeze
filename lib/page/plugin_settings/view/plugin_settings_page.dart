@@ -201,6 +201,7 @@ class _PluginSettingsPageViewState extends State<_PluginSettingsPageView> {
   void _stopExternalChromiumLoginFlow() {
     _externalCookiePollTimer?.cancel();
     _externalCookiePollTimer = null;
+    unawaited(_externalChromiumSession?.close());
     _externalChromiumSession = null;
     _externalLoginPolling = false;
   }

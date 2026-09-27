@@ -33,6 +33,8 @@ class ExternalChromiumLoginSession {
     required this.useHostSpawn,
     required this.debugPort,
     required this.openUrl,
+    required this.process,
+    required this.userDataDir,
   });
 
   static const String chromeDownloadUrl = 'https://www.google.com/chrome/';
@@ -85,6 +87,8 @@ class ExternalChromiumLoginSession {
   final bool useHostSpawn;
   final int debugPort;
   final String openUrl;
+  final Process? process;
+  final String userDataDir;
 
   static bool get _isFlatpakLinux {
     if (!Platform.isLinux) {
@@ -120,15 +124,16 @@ class ExternalChromiumLoginSession {
       openUrl,
     ];
 
-    final started = await _startProcess(
+    final process = await _startProcess(
       executable: browser.executable,
       args: args,
       useHostSpawn: browser.useHostSpawn,
     );
-    if (!started) {
+    if (process == null) {
       logger.d(
         '[WebLoginFallback] failed to start browser: ${browser.executable}',
       );
+      await _removeProfileDir(userDataDir, browser.useHostSpawn);
       return null;
     }
     logger.d('[WebLoginFallback] browser launched, debugPort=$debugPort');
@@ -138,7 +143,23 @@ class ExternalChromiumLoginSession {
       useHostSpawn: browser.useHostSpawn,
       debugPort: debugPort,
       openUrl: openUrl,
+      process: process,
+      userDataDir: userDataDir,
     );
+  }
+
+  /// 关掉 CDP 端口与临时 profile：登录成功后这两样都没有存在价值，
+  /// 留着等于把这台机器的调试入口和一份会话 cookie 数据库长期摊开。
+  Future<void> close() async {
+    final process = this.process;
+    if (process != null) {
+      try {
+        process.kill(ProcessSignal.sigterm);
+      } catch (_) {}
+      // 浏览器退出时会回写 profile，先等它落盘再删。
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+    }
+    await _removeProfileDir(userDataDir, useHostSpawn);
   }
 
   Future<List<Map<String, dynamic>>> fetchCookies() async {
@@ -356,24 +377,26 @@ class ExternalChromiumLoginSession {
     return '$normalizedRoot\\${segments.join('\\')}';
   }
 
-  static Future<bool> _startProcess({
+  static Future<Process?> _startProcess({
     required String executable,
     required List<String> args,
     required bool useHostSpawn,
   }) async {
     try {
-      if (useHostSpawn) {
-        await Process.start('flatpak-spawn', <String>[
-          '--host',
-          executable,
-          ...args,
-        ], mode: ProcessStartMode.detached);
-        return true;
-      }
-      await Process.start(executable, args, mode: ProcessStartMode.detached);
-      return true;
+      final process = useHostSpawn
+          ? await Process.start('flatpak-spawn', <String>[
+              '--host',
+              executable,
+              ...args,
+            ], mode: ProcessStartMode.detached)
+          : await Process.start(
+              executable,
+              args,
+              mode: ProcessStartMode.detached,
+            );
+      return process;
     } catch (_) {
-      return false;
+      return null;
     }
   }
 
@@ -386,7 +409,9 @@ class ExternalChromiumLoginSession {
 
   static Future<String> _resolveUserDataDir(int port, bool useHostSpawn) async {
     if (useHostSpawn && Platform.isLinux) {
-      return '/tmp/breeze-chromium-cdp-$port';
+      final dir = '/tmp/breeze-chromium-cdp-$port';
+      await _restrictProfileDir(dir, useHostSpawn: true);
+      return dir;
     }
     final directory = Directory(
       '${Directory.systemTemp.path}${Platform.pathSeparator}breeze-chromium-cdp-$port',
@@ -394,7 +419,54 @@ class ExternalChromiumLoginSession {
     if (!await directory.exists()) {
       await directory.create(recursive: true);
     }
+    await _restrictProfileDir(directory.path, useHostSpawn: false);
     return directory.path;
+  }
+
+  /// profile 里存着刚登录出来的会话 cookie，默认 umask 下 /tmp 里的目录是
+  /// 同机其他用户可读的。
+  static Future<void> _restrictProfileDir(
+    String dir, {
+    required bool useHostSpawn,
+  }) async {
+    if (Platform.isWindows) {
+      return;
+    }
+    try {
+      if (useHostSpawn) {
+        // 沙箱内看不到宿主 /tmp，也不能事后 chmod：直接让宿主以 700 建好目录。
+        await _runProcess(
+          executable: 'mkdir',
+          args: <String>['-m', '700', '-p', dir],
+          useHostSpawn: true,
+        );
+        return;
+      }
+      await _runProcess(
+        executable: 'chmod',
+        args: <String>['700', dir],
+        useHostSpawn: false,
+      );
+    } catch (_) {}
+  }
+
+  static Future<void> _removeProfileDir(String dir, bool useHostSpawn) async {
+    if (dir.isEmpty) {
+      return;
+    }
+    try {
+      if (useHostSpawn) {
+        await _runProcess(
+          executable: 'rm',
+          args: <String>['-rf', dir],
+          useHostSpawn: true,
+        );
+        return;
+      }
+      if (await Directory(dir).exists()) {
+        await Directory(dir).delete(recursive: true);
+      }
+    } catch (_) {}
   }
 
   static Future<String?> _which(
