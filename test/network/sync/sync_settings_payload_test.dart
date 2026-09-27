@@ -26,8 +26,9 @@ void main() {
   // 任何拿到这份云端文件的人都能直接解密读出。
   group('stripSyncCredentials', () {
     test('drops the sync passwords and keys', () {
-      final webdav = stripSyncCredentials(withCredentials)['syncSetting']
-          as Map<String, dynamic>;
+      final webdav =
+          stripSyncCredentials(withCredentials)['syncSetting']
+              as Map<String, dynamic>;
       final webdavAccount = webdav['webdavSetting'] as Map<String, dynamic>;
       final s3Account = webdav['s3Setting'] as Map<String, dynamic>;
 
@@ -42,8 +43,9 @@ void main() {
 
     // 新设备要能认出该连哪台服务，所以只清凭据、不清坐标。
     test('keeps the coordinates needed to recognise the service again', () {
-      final sync = stripSyncCredentials(withCredentials)['syncSetting']
-          as Map<String, dynamic>;
+      final sync =
+          stripSyncCredentials(withCredentials)['syncSetting']
+              as Map<String, dynamic>;
       final webdav = sync['webdavSetting'] as Map<String, dynamic>;
       final s3 = sync['s3Setting'] as Map<String, dynamic>;
 
@@ -55,8 +57,9 @@ void main() {
     });
 
     test('resets settingsSyncTime so it never overwrites the local clock', () {
-      final sync = stripSyncCredentials(withCredentials)['syncSetting']
-          as Map<String, dynamic>;
+      final sync =
+          stripSyncCredentials(withCredentials)['syncSetting']
+              as Map<String, dynamic>;
       expect(sync['settingsSyncTime'], 0);
     });
 

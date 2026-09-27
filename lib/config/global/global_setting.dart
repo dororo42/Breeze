@@ -436,8 +436,7 @@ class GlobalSettingCubit extends Cubit<GlobalSettingState> {
     EInkSettingState Function(EInkSettingState current) updates,
   ) {
     updateState(
-      (current) =>
-          current.copyWith(eInkSetting: updates(current.eInkSetting)),
+      (current) => current.copyWith(eInkSetting: updates(current.eInkSetting)),
     );
   }
 

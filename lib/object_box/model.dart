@@ -694,7 +694,8 @@ class UserSetting {
   BikaSettingState get bikaSetting {
     if (_bikaSetting == null && bikaSettingData != null) {
       _bikaSetting = BikaSettingState.fromJson(
-        jsonDecode(bikaSettingData!) as Map<String, dynamic>);
+        jsonDecode(bikaSettingData!) as Map<String, dynamic>,
+      );
     }
     return _bikaSetting ??= BikaSettingState();
   }
@@ -709,7 +710,8 @@ class UserSetting {
   JmSettingState get jmSetting {
     if (_jmSetting == null && jmSettingData != null) {
       _jmSetting = JmSettingState.fromJson(
-        jsonDecode(jmSettingData!) as Map<String, dynamic>);
+        jsonDecode(jmSettingData!) as Map<String, dynamic>,
+      );
     }
     return _jmSetting ??= JmSettingState();
   }

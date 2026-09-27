@@ -31,9 +31,18 @@ void main() {
     });
 
     test('autoRefreshTurns 把越界值夹回可用范围', () {
-      expect(const EInkSettingState(autoRefreshEveryNTurns: -5).autoRefreshTurns, 0);
-      expect(const EInkSettingState(autoRefreshEveryNTurns: 9999).autoRefreshTurns, 50);
-      expect(const EInkSettingState(autoRefreshEveryNTurns: 7).autoRefreshTurns, 7);
+      expect(
+        const EInkSettingState(autoRefreshEveryNTurns: -5).autoRefreshTurns,
+        0,
+      );
+      expect(
+        const EInkSettingState(autoRefreshEveryNTurns: 9999).autoRefreshTurns,
+        50,
+      );
+      expect(
+        const EInkSettingState(autoRefreshEveryNTurns: 7).autoRefreshTurns,
+        7,
+      );
     });
   });
 
