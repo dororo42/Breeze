@@ -1155,6 +1155,10 @@ class ComicSyncCore {
     );
   }
 
+  /// 读侧格式判定：仅当载荷以 `BSY2` 开头时按「magic + nonce + body」解析。
+  /// 理论上旧框架密文的前 4 字节有 2^-32 的概率撞上这个 magic，此时会解出乱码并在
+  /// 下一步解压时报错（不会静默变成脏数据）。写侧已不再产生该格式，只有中间版本
+  /// （未随任何正式包发布）上传过的载荷会命中这条分支，因此保留而不删除。
   static bool _startsMagic(List<int> bytes) {
     for (var i = 0; i < _payloadMagic.length; i++) {
       if (bytes[i] != _payloadMagic[i]) return false;
