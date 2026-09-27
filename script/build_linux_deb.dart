@@ -110,10 +110,11 @@ Future<void> _buildLinuxRelease(String projectRoot) async {
     '${Platform.pathSeparator}bundle${Platform.pathSeparator}lib'
     '${Platform.pathSeparator}crashpad_handler',
   );
-  if (!await crashpad.exists()) {
-    _fail('Missing required file: ${crashpad.path}');
+  // sentry_flutter 10.0.0-rc.0 起 Linux 默认后端改为 breakpad（进程内，不再产出
+  // crashpad_handler），所以这里只能「有就补执行位」，不能再当成硬性前置条件。
+  if (await crashpad.exists()) {
+    await _run('chmod', ['+x', crashpad.path], cwd: projectRoot);
   }
-  await _run('chmod', ['+x', crashpad.path], cwd: projectRoot);
 }
 
 Future<String> _assembleDebRoot({
