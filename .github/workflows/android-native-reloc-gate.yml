@@ -1,0 +1,114 @@
+name: Android Native Reloc Gate
+
+# 只用公开依赖构建 debug APK 并校验 native 重定位格式。
+# 不碰 git-crypt、不碰签名密钥，任何 fork 和 PR 都能跑通。
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-native-reloc-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  debug-apk-reloc-check:
+    name: Debug APK 构建 + DT_RELR 校验
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: 释放构建空间
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo apt-get clean
+
+      - name: 安装编译依赖 (LLVM/Clang)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y llvm-dev libclang-dev clang
+
+      - name: 设置 Java 21 & SDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: "temurin"
+          java-version: "21"
+          cache: "gradle"
+
+      - name: 设置 Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: 设置 Dart SDK
+        uses: dart-lang/setup-dart@v1
+
+      - name: 设置 Flutter (FVM)
+        run: |
+          dart pub global activate fvm
+          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
+          export PATH="$PATH:$HOME/.pub-cache/bin"
+          fvm install && fvm use --force
+          echo "$GITHUB_WORKSPACE/.fvm/flutter_sdk/bin" >> $GITHUB_PATH
+
+      - name: 安装 Rust (Android 目标)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android, armv7-linux-androideabi
+
+      - name: 缓存 Rust 构建产物
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            rust
+
+      - name: 读取 NDK 版本配置
+        id: ndk-config
+        run: |
+          NDK_VER=$(grep "ndkVersion" android/app/build.gradle.kts | awk -F'"' '{print $2}')
+          echo "ndk_version=$NDK_VER" >> $GITHUB_OUTPUT
+
+      - name: 缓存 Android NDK
+        uses: actions/cache@v5
+        with:
+          path: /usr/local/lib/android/sdk/ndk/${{ steps.ndk-config.outputs.ndk_version }}
+          key: ${{ runner.os }}-android-ndk-${{ steps.ndk-config.outputs.ndk_version }}
+
+      - name: 安装 Android NDK
+        run: yes | sdkmanager "ndk;${{ steps.ndk-config.outputs.ndk_version }}"
+
+      - name: 设置 NDK 环境变量
+        run: |
+          ANDROID_HOME=${ANDROID_HOME:-$ANDROID_SDK_ROOT}
+          NDK_PATH="$ANDROID_HOME/ndk/${{ steps.ndk-config.outputs.ndk_version }}"
+          echo "ANDROID_NDK_HOME=$NDK_PATH" >> $GITHUB_ENV
+          echo "ANDROID_NDK_ROOT=$NDK_PATH" >> $GITHUB_ENV
+          echo "$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin" >> $GITHUB_PATH
+
+      - name: 接受 Android Licenses
+        run: yes | fvm flutter doctor --android-licenses || true
+
+      - name: 拉取 Flutter 依赖
+        run: fvm flutter pub get
+
+      - name: 构建 Debug APK
+        run: fvm flutter build apk --debug --target-platform android-arm,android-arm64
+
+      - name: 确认待校验的 native 库存在
+        run: |
+          APK=build/app/outputs/flutter-apk/app-debug.apk
+          if [ ! -f "$APK" ]; then
+            echo "❌ 没有产出 $APK"
+            exit 1
+          fi
+          # 门禁针对 Rust 产物；APK 里若一个都没有，校验会假性通过。
+          if ! unzip -l "$APK" | grep -q 'libwindcore.so'; then
+            echo "❌ APK 内找不到 libwindcore.so，Rust native 库未被打包"
+            exit 1
+          fi
+
+      - name: 校验 Android native 重定位兼容性
+        run: python3 script/check_android_native_relocs.py build/app/outputs/flutter-apk/*.apk
