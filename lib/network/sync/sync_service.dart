@@ -25,6 +25,23 @@ const List<String> _syncableSettingsBlockNames = <String>[
   _readerBlockName,
 ];
 
+/// 从要上传到云端的设置里剥掉凭据，只保留能认出新设备时该连哪台服务的坐标。
+///
+/// WebDAV 口令与 S3 密钥正是访问这份云端存储本身的钥匙，而载荷密钥是硬编码在
+/// 公开仓库里的——把凭据一起上传等于把口令明文寄出去。口令留空即可，重连时让用户
+/// 在同步设置里重填一次，代价远小于泄露一份长期有效的密钥。
+Map<String, dynamic> stripSyncCredentials(GlobalSettingState globalSetting) {
+  final sync = globalSetting.syncSetting;
+  final sanitized = globalSetting.copyWith(
+    syncSetting: sync.copyWith(
+      settingsSyncTime: 0,
+      webdavSetting: sync.webdavSetting.copyWith(password: ''),
+      s3Setting: sync.s3Setting.copyWith(accessKey: '', secretKey: ''),
+    ),
+  );
+  return sanitized.toJson();
+}
+
 bool isSyncServiceConfigured(GlobalSettingState state) {
   switch (state.syncSetting.syncServiceType) {
     case SyncServiceType.none:
@@ -363,11 +380,7 @@ Map<String, dynamic> _buildSettingsPayload(
   GlobalSettingState globalSetting,
   _SettingsSnapshot snapshot,
 ) {
-  final sanitizedGlobal = globalSetting.copyWith(
-    syncSetting: globalSetting.syncSetting.copyWith(settingsSyncTime: 0),
-  );
-
-  final globalSettingJson = sanitizedGlobal.toJson();
+  final globalSettingJson = stripSyncCredentials(globalSetting);
   globalSettingJson.remove('customExportPath');
   globalSettingJson.remove('appLockSetting');
   globalSettingJson.remove('cacheSetting');
