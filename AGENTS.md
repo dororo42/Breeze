@@ -326,7 +326,7 @@ Android 端已彻底从 JNI + ncnn 共享库方案切换到 **waifu2x CLI** 方�
 
 ## 7. 测试策略
 
-- `test/` 下有 11 个测试文件、96 个用例：书架漫画目录关联（`test/bookshelf/`）、下载队列/重试/任务 JSON/进度（`test/download_*`）、下载资产存储、WebDAV/S3 同步核心与同步载荷编解码 / 凭据剥离（`test/network/sync/`）、阅读页图片头部尺寸、QJS 图片下载结果。`test/widget_test.dart` 仍是模板示例（已注释）。
+- `test/` 下有 12 个测试文件、102 个用例：书架漫画目录关联（`test/bookshelf/`）、下载队列/重试/任务 JSON/进度（`test/download_*`）、下载资产存储、WebDAV/S3 同步核心与同步载荷编解码 / 凭据剥离（`test/network/sync/`）、阅读页图片头部尺寸、QJS 图片下载结果、墨水屏设置开关语义与「旧 JSON 缺字段回落默认值」的持久化契约（`test/settings/`）。`test/widget_test.dart` 仍是模板示例（已注释）。
 - 运行：`fvm flutter test`（未装 fvm 的环境直接用 §4 描述的仓库版本 SDK）。注意 `test/test_helper.dart` 会 `import 'package:zephyr/main.dart'` 并创建真实 ObjectBox，因此宿主机需要 **native assets 构建链**（Rust 工具链 + `libobjectbox`）就绪，否则会先在 `Building native assets` 阶段失败；`test/network/sync/comic_sync_core_test.dart` 目前就因缺 `libobjectbox.so` 在宿主机全红，与 CI 无关。
 - **CI 现状**：`.github/workflows/pr-check.yml` 在 PR 上只跑 `flutter analyze`（当前全仓 0 issue）；`flutter test` 尚未纳入门禁。修改核心逻辑后仍需手动在目标平台验证。
 - 如果你新增复杂业务，建议补充测试；`test/download_task_json_test.dart` 与 `test/bookshelf/` 是可直接参照的写法样板。
@@ -340,6 +340,7 @@ Android 端已彻底从 JNI + ncnn 共享库方案切换到 **waifu2x CLI** 方�
 
 - **`.github/workflows/pr-check.yml`**：`pull_request` 到 `main` 时触发，只跑 `fvm flutter analyze`（静态分析门禁，不构建产物）。
 - **`.github/workflows/push-build.yml`**：每次 `push` 到 `main` 触发，并行构建 Android / Linux / Windows / macOS / iOS 产物为 artifact，**不发布 Release**。Android 构建前会安装 CMake 3.22.1，运行 `script/prepare_android_waifu2x_deps.py` 准备 OpenCV / libwebp 依赖，再依次运行 `script/build_ncnn_static_android.py` 与 `script/build_waifu2x_cli_android.py` 生成 `libwaifu2x_cli.so`；NCNN 模型不再随包打包，改为首次运行时下载；APK 产出后运行 `script/check_android_native_relocs.py` 校验 native 重定位兼容性（见 §5.3）。
+- **`.github/workflows/android-native-reloc-gate.yml`**：`pull_request` / `push` 到 `main` 触发，**不依赖任何 secret**——只构建 debug APK（`android/key.properties` 缺失时 Gradle 走默认调试签名，见 §8.3），跳过 waifu2x / ncnn 重型预编译，只产出交付用的两个 ABI，再跑 `script/check_android_native_relocs.py`。存在的意义：`push-build.yml` 的同一校验排在 git-crypt 解密之后，fork 与 PR 上没有 `GIT_CRYPT_KEY` 时根本走不到那一步，这条是它们唯一能拿到的 Android native 门禁。校验前会先断言 APK 内确有 `libwindcore.so`，因为检查脚本对不含 `.so` 的产物会打印成功、形成假性通过。
 - **`.github/workflows/release.yml`**：手动触发，输入版本号后构建全平台产物，上传符号表到 Sentry，创建 GitHub Release，更新 Homebrew Cask，并发送 Telegram 通知。Android 构建前同样会准备 waifu2x CLI 依赖并编译 CLI。
 - **`.github/workflows/release_to_telegram.yml`**：Release `published` 时触发，向 Telegram 发送版本消息与附件。
 - **`.github/workflows/signpath-smoke.yml`**：签名通道冒烟测试，与正式构建解耦。
@@ -355,6 +356,7 @@ Android 端已彻底从 JNI + ncnn 共享库方案切换到 **waifu2x CLI** 方�
 - `android/key.properties` 与 `android/Breeze-key.keystore` 使用 **git-crypt** 加密。
 - CI 中通过 `secrets.GIT_CRYPT_KEY` 解密。
 - 未解密前请勿修改这些文件，避免破坏加密状态。
+- `android/app/build.gradle.kts` 用 `keystorePropertiesFile.exists()` 判空读取，且只有 `release` buildType 挂 signingConfig，因此 **`flutter build apk --debug` 在完全没有密钥的检出下也能构建**；release 构建则必须有该文件。fork 上 `build-android` 失败若停在「解密敏感文件 (git-crypt)」这一步，就是缺 `GIT_CRYPT_KEY` secret，不是代码问题。
 
 ### 8.4 Sentry 配置
 
@@ -386,6 +388,8 @@ Android 端已彻底从 JNI + ncnn 共享库方案切换到 **waifu2x CLI** 方�
 | 新增数据源/插件支持 | `lib/network/http/plugin/unified_comic_plugin.dart`、`rust/src/api/qjs.rs` |
 | 修改数据库模型 | `lib/object_box/model.dart`，然后运行代码生成 |
 | 修改全局设置 | `lib/config/global/global_setting.dart` |
+| 修改墨水屏适配 | `lib/platform/eink/`（检测与整屏刷新）、`lib/page/setting/global/eink_setting_page.dart`、`global_setting.dart` 的 `EInkSettingState`；路由去动画走 `lib/config/router/router.dart` 的 `defaultRouteType`（`RouteType.material` 没有时长开关，只能用 `RouteType.custom` + 空 transitionsBuilder） |
+| 在不持有 context 处取全局 Overlay / 弹窗 | `navigatorKey`（`lib/main.dart`）——它必须是 `appRouter.navigatorKey` 的别名。`MaterialApp.router` 会自建 Navigator，外部传入的独立 `GlobalKey` 挂不上去，`currentState` 恒为 null，取 overlay 的代码会**静默失效而不是报错** |
 | 修改图片/下载逻辑 | `lib/service/download/`、`lib/network/http/picture/` |
 | 修改 Rust 侧能力 | `rust/src/api/`、`rust/src/qjs/`，然后运行 FRB 生成 |
 | 修改 Windows 安装器 | `windows-installer/src/`、`windows-installer/src-tauri/` |
