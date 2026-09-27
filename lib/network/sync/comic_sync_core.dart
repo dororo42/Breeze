@@ -1111,7 +1111,7 @@ class ComicSyncCore {
     }
   }
 
-  /// AES-CTR 的初始计数块长度（16 字节）与新版载荷头长度（magic + nonce）。
+  /// AES-CTR 初始计数块长度（16 字节）与带 nonce 头的载荷头长度（magic + nonce）。
   static const int _nonceLength = 16;
   static const int _headerLength = 4 + _nonceLength;
   static const List<int> _payloadMagic = <int>[
@@ -1124,33 +1124,18 @@ class ComicSyncCore {
 
   static Key get _aesKey => Key.fromUtf8('XY!Ex3j3hP^BGPFanYEjBA!L!oD2kkCN');
 
-  /// nonce 由明文派生而不是固定：AES-CTR 下密钥流 = E(nonce) ⊕ E(nonce+1) …，
-  /// 所有载荷共用同一 nonce 等于共用同一密钥流，两个密文相减即两段明文相减；
-  /// 而同步载荷是高度结构化的 JSON，相邻版本前缀几乎完全相同，泄露量最大。
-  /// 这里刻意用 HMAC(key, 明文) 而不是随机数，是为了让同一明文永远得到同一密文——
-  /// 上层用密文 MD5 做“内容是否变化”的判据和内容寻址的文件选择，随机化会让每次
-  /// 同步都判定为有变化并多写一个远端文件。
-  static Uint8List _deriveNonce(List<int> plain) {
-    final digest = Hmac(sha256, _aesKey.bytes).convert(plain).bytes;
-    return Uint8List.fromList(digest.sublist(0, _nonceLength));
-  }
-
-  /// 载荷加解密的测试入口：`encodeEncryptedPayload` 还要过一遍 Rust 侧压缩，
-  /// 宿主测试环境里加载不到那个 cdylib。
-  @visibleForTesting
-  static List<int> encryptPayloadForTest(List<int> plain) =>
-      _encryptBytes(plain);
-
-  @visibleForTesting
-  static List<int> decryptPayloadForTest(List<int> encrypted) =>
-      _decryptBytes(encrypted);
-
+  /// 写侧仍使用旧框架（固定 nonce、无载荷头）：**旧版本只认这一种格式**，
+  /// 一旦新设备写出 `BSY2` + nonce 头，旧设备解不开对端数据，同步直接不可用。
+  /// 读侧保留对新框架的识别（见 `_decryptBytes`），所以将来若要真正切到
+  /// per-payload nonce，需要先让「能读新格式」发版覆盖到所有在用设备，再改这里。
+  ///
+  /// 已知代价：AES-CTR 下所有载荷共用同一密钥流，两段密文异或等于两段明文异或。
+  /// 这里的威胁模型是远端存储被读取，而密钥本身硬编码在公开仓库里——认证加密
+  /// （换 GCM + 随机 nonce）才是根治方案，但那同样需要一次格式迁移。
   static List<int> _encryptBytes(List<int> bytes) {
-    final nonce = _deriveNonce(bytes);
-    final body = Encrypter(
+    return Encrypter(
       AES(_aesKey, mode: AESMode.ctr),
-    ).encryptBytes(bytes, iv: IV(nonce)).bytes;
-    return <int>[..._payloadMagic, ...nonce, ...body];
+    ).encryptBytes(bytes, iv: IV.fromUtf8(_legacyNonce)).bytes;
   }
 
   static List<int> _decryptBytes(List<int> bytes) {
@@ -1163,7 +1148,7 @@ class ComicSyncCore {
         iv: IV(nonce),
       );
     }
-    // 旧版载荷：固定 nonce、无载荷头。
+    // 固定 nonce、无载荷头 —— 旧版本格式，也是当前写侧格式。
     return encrypter.decryptBytes(
       Encrypted(Uint8List.fromList(bytes)),
       iv: IV.fromUtf8(_legacyNonce),
@@ -1175,6 +1160,29 @@ class ComicSyncCore {
       if (bytes[i] != _payloadMagic[i]) return false;
     }
     return true;
+  }
+
+  /// 载荷加解密的测试入口：`encodeEncryptedPayload` 还要过一遍 Rust 侧压缩，
+  /// 宿主测试环境里加载不到那个 cdylib。
+  @visibleForTesting
+  static List<int> encryptPayloadForTest(List<int> plain) =>
+      _encryptBytes(plain);
+
+  @visibleForTesting
+  static List<int> decryptPayloadForTest(List<int> encrypted) =>
+      _decryptBytes(encrypted);
+
+  /// 构造一个带 `BSY2` 载荷头的密文，用于验证读侧对实验性新格式的兼容性。
+  @visibleForTesting
+  static List<int> buildHeaderedPayloadForTest({
+    required List<int> plain,
+    required List<int> nonce,
+  }) {
+    assert(nonce.length == _nonceLength);
+    final body = Encrypter(
+      AES(_aesKey, mode: AESMode.ctr),
+    ).encryptBytes(plain, iv: IV(Uint8List.fromList(nonce))).bytes;
+    return <int>[..._payloadMagic, ...nonce, ...body];
   }
 
   static Map<String, dynamic> _stripLocalId(Map<String, dynamic> json) {
