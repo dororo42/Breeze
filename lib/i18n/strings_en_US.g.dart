@@ -326,6 +326,40 @@ class _Translations$settings$en_US extends Translations$settings$zh_CN {
 	@override String get imageProcessing => 'Image processing';
 	@override String get realSr => 'Image Super-Resolution (Experimental)';
 	@override String get realSrSubtitle => 'Experimental feature, may be unstable';
+	@override String get eink => 'E-ink';
+	@override String get einkSubtitle => 'Page-turn animation · full refresh · loading';
+	@override String get einkPageTitle => 'E-ink adaptation';
+	@override String get einkDetected => 'Detected as an e-ink device';
+	@override String get einkNotDetected => 'No e-ink device detected, you can enable it manually';
+	@override String get einkEnabled => 'Enable e-ink mode';
+	@override String get einkEnabledSubtitle => 'Remove animations and refresh the whole screen periodically';
+	@override String get einkSectionAnimation => 'Animation & transitions';
+	@override String get einkNoRouteTransition => 'Remove page transition animation';
+	@override String get einkNoRouteTransitionSubtitle => 'Show pages instantly instead of sliding and fading';
+	@override String get einkNoPageAnimation => 'Remove page-turn animation';
+	@override String get einkNoPageAnimationSubtitle => 'Jump straight to the next page without in-between frames';
+	@override String get einkNoScrollBounce => 'Remove scroll overscroll';
+	@override String get einkNoScrollBounceSubtitle => 'Stop at the edge instead of bouncing in webtoon mode';
+	@override String get einkSectionLoading => 'Loading';
+	@override String get einkBlankBeforeImage => 'Blank before image';
+	@override String get einkBlankBeforeImageSubtitle => 'Show a blank frame first to reduce ghosting';
+	@override String get einkBlankDelay => 'Blank duration';
+	@override String get einkPreloadCount => 'Preloaded images';
+	@override String get einkPreloadCountSubtitle => 'E-ink refreshes slowly, so preloading more pages makes turning feel instant';
+	@override String get einkSectionRefresh => 'Refresh';
+	@override String get einkRefreshMode => 'Full-screen refresh';
+	@override String get einkRefreshNone => 'Disabled';
+	@override String get einkRefreshWhite => 'White flash';
+	@override String get einkRefreshFull => 'Black & white flash';
+	@override String get einkRefreshHint => 'A full refresh flashes white or black-and-white to clear the ghost of the previous page.';
+	@override String get einkRefreshNow => 'Refresh now';
+	@override String get einkRefreshDone => 'Screen refreshed';
+	@override String get einkAutoRefreshTurns => 'Auto refresh every N pages';
+	@override String get einkAutoRefreshOff => 'Never';
+	@override String get einkShowRefreshButton => 'Show refresh button';
+	@override String get einkShowRefreshButtonSubtitle => 'Keep a manual full refresh in a reader corner';
+	@override String get einkNoSpinner => 'No loading spinner';
+	@override String get einkNoSpinnerSubtitle => 'A spinning indicator forces the panel to keep doing partial refreshes';
 	@override String get autoRealSr => 'Auto super-resolution';
 	@override String get resolutionThreshold => 'Resolution threshold';
 	@override String get debug => 'Debug';
@@ -1765,6 +1799,40 @@ extension on TranslationsEnUs {
 			'settings.imageProcessing' => 'Image processing',
 			'settings.realSr' => 'Image Super-Resolution (Experimental)',
 			'settings.realSrSubtitle' => 'Experimental feature, may be unstable',
+			'settings.eink' => 'E-ink',
+			'settings.einkSubtitle' => 'Page-turn animation · full refresh · loading',
+			'settings.einkPageTitle' => 'E-ink adaptation',
+			'settings.einkDetected' => 'Detected as an e-ink device',
+			'settings.einkNotDetected' => 'No e-ink device detected, you can enable it manually',
+			'settings.einkEnabled' => 'Enable e-ink mode',
+			'settings.einkEnabledSubtitle' => 'Remove animations and refresh the whole screen periodically',
+			'settings.einkSectionAnimation' => 'Animation & transitions',
+			'settings.einkNoRouteTransition' => 'Remove page transition animation',
+			'settings.einkNoRouteTransitionSubtitle' => 'Show pages instantly instead of sliding and fading',
+			'settings.einkNoPageAnimation' => 'Remove page-turn animation',
+			'settings.einkNoPageAnimationSubtitle' => 'Jump straight to the next page without in-between frames',
+			'settings.einkNoScrollBounce' => 'Remove scroll overscroll',
+			'settings.einkNoScrollBounceSubtitle' => 'Stop at the edge instead of bouncing in webtoon mode',
+			'settings.einkSectionLoading' => 'Loading',
+			'settings.einkBlankBeforeImage' => 'Blank before image',
+			'settings.einkBlankBeforeImageSubtitle' => 'Show a blank frame first to reduce ghosting',
+			'settings.einkBlankDelay' => 'Blank duration',
+			'settings.einkPreloadCount' => 'Preloaded images',
+			'settings.einkPreloadCountSubtitle' => 'E-ink refreshes slowly, so preloading more pages makes turning feel instant',
+			'settings.einkSectionRefresh' => 'Refresh',
+			'settings.einkRefreshMode' => 'Full-screen refresh',
+			'settings.einkRefreshNone' => 'Disabled',
+			'settings.einkRefreshWhite' => 'White flash',
+			'settings.einkRefreshFull' => 'Black & white flash',
+			'settings.einkRefreshHint' => 'A full refresh flashes white or black-and-white to clear the ghost of the previous page.',
+			'settings.einkRefreshNow' => 'Refresh now',
+			'settings.einkRefreshDone' => 'Screen refreshed',
+			'settings.einkAutoRefreshTurns' => 'Auto refresh every N pages',
+			'settings.einkAutoRefreshOff' => 'Never',
+			'settings.einkShowRefreshButton' => 'Show refresh button',
+			'settings.einkShowRefreshButtonSubtitle' => 'Keep a manual full refresh in a reader corner',
+			'settings.einkNoSpinner' => 'No loading spinner',
+			'settings.einkNoSpinnerSubtitle' => 'A spinning indicator forces the panel to keep doing partial refreshes',
 			'settings.autoRealSr' => 'Auto super-resolution',
 			'settings.resolutionThreshold' => 'Resolution threshold',
 			'settings.debug' => 'Debug',
@@ -2026,6 +2094,8 @@ extension on TranslationsEnUs {
 			'comicInfo.resolveEpsCountFailed' => ({required Object type}) => 'Cannot resolve episode count for reading: ${type}',
 			'reader.pageMode' => 'Page turn mode',
 			'reader.fullscreen' => 'Fullscreen',
+			_ => null,
+		} ?? switch (path) {
 			'reader.leftHandMode' => 'Left-hand mode',
 			'reader.rightHandMode' => 'Right-hand mode',
 			'reader.reverseHorizontalPageTurn' => 'Reverse arrow keys',
@@ -2060,8 +2130,6 @@ extension on TranslationsEnUs {
 			'reader.doublePage' => 'Double page',
 			'reader.doublePageSubtitle' => 'Enable double-page spread in current reading mode',
 			'reader.doublePageSeamless' => 'Seamless double page',
-			_ => null,
-		} ?? switch (path) {
 			'reader.doublePageSeamlessSubtitle' => 'Give each page half the width, preserve its aspect ratio, and remove the gap between them',
 			'reader.doublePageLeadingBlank' => 'Leading blank',
 			'reader.doublePageLeadingBlankSubtitle' => 'Insert a blank page at the start of each chapter to shift page pairing',
@@ -2540,6 +2608,8 @@ extension on TranslationsEnUs {
 			'discover.resetOrder' => 'Reset order',
 			'discover.noPlugins' => 'No plugins available. Go to the plugin store to install one~',
 			'discover.pluginStore' => 'Plugin Store',
+			_ => null,
+		} ?? switch (path) {
 			'discover.browseInstall' => 'Browse & Install',
 			'discover.noPluginForSearch' => 'No plugins available, cannot search',
 			'discover.pluginInfoLoadFailed' => ({required Object error}) => 'Failed to load plugin info: ${error}',
@@ -2574,8 +2644,6 @@ extension on TranslationsEnUs {
 			'comicEntry.deleteFavoriteConfirm' => ({required Object title}) => 'Delete favorite record for "${title}"?',
 			'comicEntry.deleteHistory' => 'Delete History',
 			'comicEntry.deleteHistoryConfirm' => ({required Object title}) => 'Delete history record for "${title}"?',
-			_ => null,
-		} ?? switch (path) {
 			'comicEntry.deleteDownload' => 'Delete Download',
 			'comicEntry.deleteDownloadConfirm' => ({required Object title}) => 'Delete download record and files for "${title}"?',
 			'comicEntry.deleteFailed' => 'Delete failed',

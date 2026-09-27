@@ -764,6 +764,108 @@ class Translations$settings$zh_CN {
 	/// zh-CN: '试验性功能，可能不稳定'
 	String get realSrSubtitle => '试验性功能，可能不稳定';
 
+	/// zh-CN: '墨水屏'
+	String get eink => '墨水屏';
+
+	/// zh-CN: '翻页动画 · 整屏刷新 · 加载'
+	String get einkSubtitle => '翻页动画 · 整屏刷新 · 加载';
+
+	/// zh-CN: '墨水屏适配'
+	String get einkPageTitle => '墨水屏适配';
+
+	/// zh-CN: '已识别为墨水屏设备'
+	String get einkDetected => '已识别为墨水屏设备';
+
+	/// zh-CN: '未识别到墨水屏设备，可手动开启'
+	String get einkNotDetected => '未识别到墨水屏设备，可手动开启';
+
+	/// zh-CN: '启用墨水屏模式'
+	String get einkEnabled => '启用墨水屏模式';
+
+	/// zh-CN: '去除动画，并让屏幕定期整屏刷新'
+	String get einkEnabledSubtitle => '去除动画，并让屏幕定期整屏刷新';
+
+	/// zh-CN: '动画与过渡'
+	String get einkSectionAnimation => '动画与过渡';
+
+	/// zh-CN: '去除页面切换动画'
+	String get einkNoRouteTransition => '去除页面切换动画';
+
+	/// zh-CN: '进入和退出页面直接出图，不做滑动淡入'
+	String get einkNoRouteTransitionSubtitle => '进入和退出页面直接出图，不做滑动淡入';
+
+	/// zh-CN: '去除翻页动画'
+	String get einkNoPageAnimation => '去除翻页动画';
+
+	/// zh-CN: '翻页改为直接跳转，不留中间帧'
+	String get einkNoPageAnimationSubtitle => '翻页改为直接跳转，不留中间帧';
+
+	/// zh-CN: '去除滚动回弹'
+	String get einkNoScrollBounce => '去除滚动回弹';
+
+	/// zh-CN: '长图模式拖到边界直接停住'
+	String get einkNoScrollBounceSubtitle => '长图模式拖到边界直接停住';
+
+	/// zh-CN: '加载'
+	String get einkSectionLoading => '加载';
+
+	/// zh-CN: '翻页先白屏'
+	String get einkBlankBeforeImage => '翻页先白屏';
+
+	/// zh-CN: '白屏一帧再出图，减少残影'
+	String get einkBlankBeforeImageSubtitle => '白屏一帧再出图，减少残影';
+
+	/// zh-CN: '白屏时长'
+	String get einkBlankDelay => '白屏时长';
+
+	/// zh-CN: '预加载图片数量'
+	String get einkPreloadCount => '预加载图片数量';
+
+	/// zh-CN: '墨水屏刷新慢，多预载几张可以让翻页更接近即时'
+	String get einkPreloadCountSubtitle => '墨水屏刷新慢，多预载几张可以让翻页更接近即时';
+
+	/// zh-CN: '刷新'
+	String get einkSectionRefresh => '刷新';
+
+	/// zh-CN: '整屏刷新方式'
+	String get einkRefreshMode => '整屏刷新方式';
+
+	/// zh-CN: '不刷新'
+	String get einkRefreshNone => '不刷新';
+
+	/// zh-CN: '白屏刷'
+	String get einkRefreshWhite => '白屏刷';
+
+	/// zh-CN: '黑白全刷'
+	String get einkRefreshFull => '黑白全刷';
+
+	/// zh-CN: '整屏刷新会闪一次白或黑白，用来清掉上一页残影。'
+	String get einkRefreshHint => '整屏刷新会闪一次白或黑白，用来清掉上一页残影。';
+
+	/// zh-CN: '立即整屏刷新'
+	String get einkRefreshNow => '立即整屏刷新';
+
+	/// zh-CN: '已完成整屏刷新'
+	String get einkRefreshDone => '已完成整屏刷新';
+
+	/// zh-CN: '每翻 N 页自动整屏刷新'
+	String get einkAutoRefreshTurns => '每翻 N 页自动整屏刷新';
+
+	/// zh-CN: '不自动刷新'
+	String get einkAutoRefreshOff => '不自动刷新';
+
+	/// zh-CN: '显示刷新按钮'
+	String get einkShowRefreshButton => '显示刷新按钮';
+
+	/// zh-CN: '阅读页角落常驻，随时手动整屏刷新'
+	String get einkShowRefreshButtonSubtitle => '阅读页角落常驻，随时手动整屏刷新';
+
+	/// zh-CN: '加载时不转圈'
+	String get einkNoSpinner => '加载时不转圈';
+
+	/// zh-CN: '转圈动画会让墨水屏反复局刷并留下残影'
+	String get einkNoSpinnerSubtitle => '转圈动画会让墨水屏反复局刷并留下残影';
+
 	/// zh-CN: '自动超分'
 	String get autoRealSr => '自动超分';
 
@@ -4089,6 +4191,40 @@ extension on Translations {
 			'settings.imageProcessing' => '图片处理',
 			'settings.realSr' => '图片超分（实验性）',
 			'settings.realSrSubtitle' => '试验性功能，可能不稳定',
+			'settings.eink' => '墨水屏',
+			'settings.einkSubtitle' => '翻页动画 · 整屏刷新 · 加载',
+			'settings.einkPageTitle' => '墨水屏适配',
+			'settings.einkDetected' => '已识别为墨水屏设备',
+			'settings.einkNotDetected' => '未识别到墨水屏设备，可手动开启',
+			'settings.einkEnabled' => '启用墨水屏模式',
+			'settings.einkEnabledSubtitle' => '去除动画，并让屏幕定期整屏刷新',
+			'settings.einkSectionAnimation' => '动画与过渡',
+			'settings.einkNoRouteTransition' => '去除页面切换动画',
+			'settings.einkNoRouteTransitionSubtitle' => '进入和退出页面直接出图，不做滑动淡入',
+			'settings.einkNoPageAnimation' => '去除翻页动画',
+			'settings.einkNoPageAnimationSubtitle' => '翻页改为直接跳转，不留中间帧',
+			'settings.einkNoScrollBounce' => '去除滚动回弹',
+			'settings.einkNoScrollBounceSubtitle' => '长图模式拖到边界直接停住',
+			'settings.einkSectionLoading' => '加载',
+			'settings.einkBlankBeforeImage' => '翻页先白屏',
+			'settings.einkBlankBeforeImageSubtitle' => '白屏一帧再出图，减少残影',
+			'settings.einkBlankDelay' => '白屏时长',
+			'settings.einkPreloadCount' => '预加载图片数量',
+			'settings.einkPreloadCountSubtitle' => '墨水屏刷新慢，多预载几张可以让翻页更接近即时',
+			'settings.einkSectionRefresh' => '刷新',
+			'settings.einkRefreshMode' => '整屏刷新方式',
+			'settings.einkRefreshNone' => '不刷新',
+			'settings.einkRefreshWhite' => '白屏刷',
+			'settings.einkRefreshFull' => '黑白全刷',
+			'settings.einkRefreshHint' => '整屏刷新会闪一次白或黑白，用来清掉上一页残影。',
+			'settings.einkRefreshNow' => '立即整屏刷新',
+			'settings.einkRefreshDone' => '已完成整屏刷新',
+			'settings.einkAutoRefreshTurns' => '每翻 N 页自动整屏刷新',
+			'settings.einkAutoRefreshOff' => '不自动刷新',
+			'settings.einkShowRefreshButton' => '显示刷新按钮',
+			'settings.einkShowRefreshButtonSubtitle' => '阅读页角落常驻，随时手动整屏刷新',
+			'settings.einkNoSpinner' => '加载时不转圈',
+			'settings.einkNoSpinnerSubtitle' => '转圈动画会让墨水屏反复局刷并留下残影',
 			'settings.autoRealSr' => '自动超分',
 			'settings.resolutionThreshold' => '分辨率阈值',
 			'settings.debug' => '调试',
@@ -4350,6 +4486,8 @@ extension on Translations {
 			'comicInfo.resolveComicIdFailed' => ({required Object type}) => '无法解析阅读 comicId: ${type}',
 			'comicInfo.resolveEpsCountFailed' => ({required Object type}) => '无法解析阅读章节数: ${type}',
 			'reader.pageMode' => '翻页模式',
+			_ => null,
+		} ?? switch (path) {
 			'reader.fullscreen' => '全屏模式',
 			'reader.leftHandMode' => '左手模式',
 			'reader.rightHandMode' => '右手模式',
@@ -4384,8 +4522,6 @@ extension on Translations {
 			'reader.singlePageRtl' => '单页式（从右到左）',
 			'reader.doublePage' => '双页阅读',
 			'reader.doublePageSubtitle' => '在当前阅读模式中启用双页并排',
-			_ => null,
-		} ?? switch (path) {
 			'reader.doublePageSeamless' => '双页无缝',
 			'reader.doublePageSeamlessSubtitle' => '左右各占一半宽度，按图片比例独立显示并消除中间留白',
 			'reader.doublePageLeadingBlank' => '首页留白',
@@ -4864,6 +5000,8 @@ extension on Translations {
 			'discover.customOrder' => '自定义插件顺序',
 			'discover.resetOrder' => '恢复默认顺序',
 			'discover.noPlugins' => '暂无可用插件，去插件商店安装一个吧~',
+			_ => null,
+		} ?? switch (path) {
 			'discover.pluginStore' => '插件商店',
 			'discover.browseInstall' => '浏览安装',
 			'discover.noPluginForSearch' => '暂无可用插件，无法搜索',
@@ -4898,8 +5036,6 @@ extension on Translations {
 			'comicEntry.deleteFavorite' => '删除收藏',
 			'comicEntry.deleteFavoriteConfirm' => ({required Object title}) => '确定要删除（${title}）的收藏记录吗？',
 			'comicEntry.deleteHistory' => '删除历史记录',
-			_ => null,
-		} ?? switch (path) {
 			'comicEntry.deleteHistoryConfirm' => ({required Object title}) => '确定要删除（${title}）的历史记录吗？',
 			'comicEntry.deleteDownload' => '删除下载记录',
 			'comicEntry.deleteDownloadConfirm' => ({required Object title}) => '确定要删除（${title}）的下载记录及文件吗？',

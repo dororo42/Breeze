@@ -37,6 +37,7 @@ import 'package:zephyr/page/comic_follow/cubit/comic_follow_cubit.dart';
 import 'package:zephyr/platform/desktop/native_window.dart';
 import 'package:zephyr/platform/desktop/system_tray.dart';
 import 'package:zephyr/platform/desktop/window_logic.dart';
+import 'package:zephyr/platform/eink/eink_device.dart';
 import 'package:zephyr/service/reader/reader_desktop_fullscreen_service.dart';
 import 'package:zephyr/service/startup_database_snapshot_service.dart';
 import 'package:zephyr/src/rust/api/qjs.dart';
@@ -73,7 +74,9 @@ List<String> cfIpList = [];
 
 final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-final navigatorKey = GlobalKey<NavigatorState>();
+/// 直接复用路由自己的 Navigator key：MaterialApp.router 会自建 Navigator，
+/// 传进来的独立 GlobalKey 不会被挂上，只有这个 key 拿得到当前 overlay。
+final navigatorKey = appRouter.navigatorKey;
 
 class AppScrollBehavior extends MaterialScrollBehavior {
   const AppScrollBehavior();
@@ -356,6 +359,8 @@ Future<(GlobalSettingCubit, PluginRegistryCubit)> _initServices() async {
   setHostCacheGcEnabled(enabled: false);
 
   setTlsVerifyEnabled(enabled: false);
+
+  await applyEinkAutoDetection(globalSettingCubit);
 
   // Rust 已在本函数开头初始化；快照查询和 Brotli 压缩均在后台执行。
   unawaited(saveStartupDatabaseSnapshot());
