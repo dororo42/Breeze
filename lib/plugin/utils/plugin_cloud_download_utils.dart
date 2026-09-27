@@ -61,7 +61,10 @@ Future<String> fetchCloudPluginListWithCdnFallback() async {
       'https://breeze-version.s3.bitiful.net/plugin-list-version.json',
     );
     final data = temp.json;
-    version = (data is Map ? data['version'] : null) ?? 'latest';
+    final remoteVersion = data is Map ? data['version'] : null;
+    version = remoteVersion is String && remoteVersion.isNotEmpty
+        ? remoteVersion
+        : 'latest';
   } catch (e) {
     logger.e(e);
     return fetchCloudPluginListPayload(_cloudPluginListDirectUrl);

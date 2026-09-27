@@ -125,19 +125,16 @@ class _ComicInfoState extends State<_ComicInfo>
   // 章节显示顺序缓存：raw 列表实例不变且倒序开关不变时直接复用，
   // 避免每次 build 都 sort + reversed.toList()。
   // 非倒序时 display 与 sorted 同引用，零拷贝。
-  List<dynamic>? _epsRawRef;
-  List<dynamic> _sortedEps = const [];
-  List<dynamic> _displayEps = const [];
+  List<Ep>? _epsRawRef;
+  List<Ep> _sortedEps = const [];
+  List<Ep> _displayEps = const [];
   bool _displayEpsReversed = false;
   bool _displayEpsValid = false;
 
-  List<dynamic> _resolveDisplayEps(List<dynamic> rawEps) {
+  List<Ep> _resolveDisplayEps(List<Ep> rawEps) {
     if (!identical(rawEps, _epsRawRef)) {
       _epsRawRef = rawEps;
-      _sortedEps = sortChaptersByOrder(
-        List<dynamic>.from(rawEps),
-        (e) => (e as Ep).order,
-      );
+      _sortedEps = sortChaptersByOrder(List<Ep>.from(rawEps), (e) => e.order);
       _displayEpsValid = false;
     }
     if (!_displayEpsValid || _displayEpsReversed != _isReversed) {
@@ -1234,7 +1231,7 @@ class _EpisodeBoard extends StatefulWidget {
   final String comicId;
   final String comicTitle;
   final bool allowDownload;
-  final List<dynamic> displayEps;
+  final List<Ep> displayEps;
   final bool downloadAllowed;
   final String downloadDisabledReason;
   final dynamic allInfo;
@@ -1307,7 +1304,7 @@ class _EpisodeBoardState extends State<_EpisodeBoard> {
     final chapter = chapters[i];
     return EpButtonWidget(
       key: ValueKey(chapter.id),
-      doc: widget.displayEps[i] as Ep,
+      doc: widget.displayEps[i],
       chapter: chapter,
       controller: widget.controller,
       allInfo: widget.allInfo,

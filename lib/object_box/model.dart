@@ -755,7 +755,7 @@ class UserSetting {
   GlobalSettingState get globalSetting {
     if (_globalSetting == null && globalSettingData != null) {
       _globalSetting = GlobalSettingState.fromJson(
-        jsonDecode(globalSettingData!),
+        jsonDecode(globalSettingData!) as Map<String, dynamic>,
       );
     }
     return _globalSetting ??= GlobalSettingState();
@@ -770,7 +770,8 @@ class UserSetting {
   @Transient()
   BikaSettingState get bikaSetting {
     if (_bikaSetting == null && bikaSettingData != null) {
-      _bikaSetting = BikaSettingState.fromJson(jsonDecode(bikaSettingData!));
+      _bikaSetting = BikaSettingState.fromJson(
+        jsonDecode(bikaSettingData!) as Map<String, dynamic>);
     }
     return _bikaSetting ??= BikaSettingState();
   }
@@ -784,7 +785,8 @@ class UserSetting {
   @Transient()
   JmSettingState get jmSetting {
     if (_jmSetting == null && jmSettingData != null) {
-      _jmSetting = JmSettingState.fromJson(jsonDecode(jmSettingData!));
+      _jmSetting = JmSettingState.fromJson(
+        jsonDecode(jmSettingData!) as Map<String, dynamic>);
     }
     return _jmSetting ??= JmSettingState();
   }

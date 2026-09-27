@@ -6,13 +6,16 @@ linter:
     always_use_package_imports: true
 
 analyzer:
+  language:
+    strict-casts: true
   exclude:
-    - "DART_T~1/**"
     # FRB / ObjectBox / freezed / json_serializable 生成代码，请勿手改
     - "lib/src/rust/**"
     - "**/*.g.dart"
     - "**/*.freezed.dart"
     - "lib/util/router/router.gr.dart"
+    # 上游 vendored 代码，跟随其自身 lint 配置
+    - third_party/**
     - build/**
     - android/**
     - ios/**

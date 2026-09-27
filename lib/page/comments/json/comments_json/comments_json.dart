@@ -10,7 +10,7 @@ part 'comments_json.freezed.dart';
 part 'comments_json.g.dart';
 
 CommentsJson commentsJsonFromJson(String str) =>
-    CommentsJson.fromJson(json.decode(str));
+    CommentsJson.fromJson(json.decode(str) as Map<String, dynamic>);
 
 String commentsJsonToJson(CommentsJson data) => json.encode(data.toJson());
 

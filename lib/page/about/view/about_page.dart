@@ -404,10 +404,10 @@ class _AboutPageState extends State<AboutPage> {
                 runSpacing: 12,
                 children: _contributors.map((contributor) {
                   return _buildContributorAvatar(
-                    avatarUrl: contributor['avatar_url'] ?? '',
-                    login: contributor['login'] ?? '',
-                    contributions: contributor['contributions'] ?? 0,
-                    htmlUrl: contributor['html_url'] ?? '',
+                    avatarUrl: contributor['avatar_url'] as String? ?? '',
+                    login: contributor['login'] as String? ?? '',
+                    contributions: contributor['contributions'] as int? ?? 0,
+                    htmlUrl: contributor['html_url'] as String? ?? '',
                   );
                 }).toList(),
               ),

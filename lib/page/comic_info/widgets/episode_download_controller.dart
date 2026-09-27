@@ -7,6 +7,7 @@ import 'package:zephyr/object_box/model.dart';
 import 'package:zephyr/object_box/objectbox.g.dart';
 import 'package:zephyr/page/comic_info/cubit/episode_download_status_cubit.dart';
 import 'package:zephyr/page/comic_info/cubit/episode_selection_cubit.dart';
+import 'package:zephyr/page/comic_info/json/normal/normal_comic_all_info.dart';
 import 'package:zephyr/page/download/adapters/download_chapter_adapter.dart';
 import 'package:zephyr/page/download/models/download_chapter.dart';
 import 'package:zephyr/page/download/models/unified_comic_download.dart';
@@ -415,7 +416,7 @@ class EpisodeDownloadController {
   /// 不变时（下载进度 tick 触发的重建）直接复用上次结果，避免
   /// O(N) 的 fromEp + extern Map 拷贝。倒序切换会改变元素顺序，
   /// 自然 miss 并按新顺序重建。
-  List<DownloadChapter> adaptEps(List<dynamic> eps) {
+  List<DownloadChapter> adaptEps(List<Ep> eps) {
     if (_lastEpsRefs.length == eps.length && eps.isNotEmpty) {
       var same = true;
       for (var i = 0; i < eps.length; i++) {

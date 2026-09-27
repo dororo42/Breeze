@@ -6,7 +6,7 @@ part 'normal_comic_all_info.freezed.dart';
 part 'normal_comic_all_info.g.dart';
 
 NormalComicAllInfo normalComicAllInfoFromJson(String str) =>
-    NormalComicAllInfo.fromJson(json.decode(str));
+    NormalComicAllInfo.fromJson(json.decode(str) as Map<String, dynamic>);
 
 String normalComicAllInfoToJson(NormalComicAllInfo data) =>
     json.encode(data.toJson());

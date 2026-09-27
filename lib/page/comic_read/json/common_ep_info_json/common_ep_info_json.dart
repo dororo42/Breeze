@@ -10,7 +10,7 @@ part 'common_ep_info_json.freezed.dart';
 part 'common_ep_info_json.g.dart';
 
 CommonEpInfoJson commonEpInfoJsonFromJson(String str) =>
-    CommonEpInfoJson.fromJson(json.decode(str));
+    CommonEpInfoJson.fromJson(json.decode(str) as Map<String, dynamic>);
 
 String commonEpInfoJsonToJson(CommonEpInfoJson data) =>
     json.encode(data.toJson());

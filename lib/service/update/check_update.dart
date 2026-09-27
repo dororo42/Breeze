@@ -44,7 +44,7 @@ Future<GithubReleaseJson> getCloudVersion() async {
     );
     final body = response.text.trim();
     if (response.ok && body.isNotEmpty) {
-      return GithubReleaseJson.fromJson(jsonDecode(body));
+      return GithubReleaseJson.fromJson(jsonDecode(body) as Map<String, dynamic>);
     }
   } catch (e, stackTrace) {
     logger.w(
@@ -79,7 +79,9 @@ Future<GithubReleaseJson> getCloudVersion() async {
         );
         final body = response.text.trim();
         if (response.ok && body.isNotEmpty) {
-          return GithubReleaseJson.fromJson(jsonDecode(body));
+          return GithubReleaseJson.fromJson(
+            jsonDecode(body) as Map<String, dynamic>,
+          );
         }
       } catch (e, stackTrace) {
         logger.w('CDN 镜像通道失败: $url', error: e, stackTrace: stackTrace);

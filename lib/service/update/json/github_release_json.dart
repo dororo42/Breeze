@@ -11,7 +11,9 @@ part 'github_release_json.g.dart';
 
 List<GithubReleaseJson> githubReleaseJsonFromJson(String str) =>
     List<GithubReleaseJson>.from(
-      json.decode(str).map((x) => GithubReleaseJson.fromJson(x)),
+      (json.decode(str) as List<dynamic>).map(
+        (x) => GithubReleaseJson.fromJson(x as Map<String, dynamic>),
+      ),
     );
 
 String githubReleaseJsonToJson(List<GithubReleaseJson> data) =>

@@ -44,7 +44,7 @@ String downloadChapterKeyOfRef(DownloadChapterTaskRef ref) {
 }
 
 DownloadTaskJson downloadTaskJsonFromJson(String str) =>
-    DownloadTaskJson.fromJson(json.decode(str));
+    DownloadTaskJson.fromJson(json.decode(str) as Map<String, dynamic>);
 
 String downloadTaskJsonToJson(DownloadTaskJson data) =>
     json.encode(data.toJson());

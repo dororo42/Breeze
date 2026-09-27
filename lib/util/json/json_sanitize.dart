@@ -4,6 +4,9 @@
 /// - DateTime 转为 ISO 8601 字符串
 /// - Map / List 递归处理
 /// - 其他对象优先调用 toJson()，失败则转为 toString()
+Map<String, dynamic> sanitizeMap(Map<String, dynamic> value) =>
+    sanitizeDynamic(value) as Map<String, dynamic>;
+
 dynamic sanitizeDynamic(dynamic value) {
   if (value == null || value is String || value is num || value is bool) {
     return value;

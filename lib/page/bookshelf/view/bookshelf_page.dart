@@ -7,6 +7,7 @@ import 'package:zephyr/cubit/plugin_registry_cubit.dart';
 import 'package:zephyr/i18n/strings.g.dart';
 import 'package:zephyr/page/bookshelf/bookshelf.dart' hide SearchEnter;
 import 'package:zephyr/page/bookshelf/service/download_folder_service.dart';
+import 'package:zephyr/page/bookshelf/service/folder_view.dart';
 import 'package:zephyr/page/bookshelf/service/favorite_folder_service.dart';
 import 'package:zephyr/page/search/widget/search_input_dialog.dart';
 import 'package:zephyr/plugin/plugin_registry_service.dart';
@@ -508,10 +509,10 @@ class _BookshelfPageContentState extends State<_BookshelfPageContent>
 
   Future<_FolderDialogOutcome?> _handleFolderAction(
     BuildContext dialogContext,
-    dynamic folder,
+    FolderView folder,
   ) async {
-    final String folderKey = folder.key as String;
-    final String folderName = folder.name as String;
+    final String folderKey = folder.key;
+    final String folderName = folder.name;
 
     if (!mounted) {
       return null;
@@ -739,7 +740,7 @@ class _BookshelfFilterDialog extends StatefulWidget {
   final List<String> availableSources;
   final List<_FilterSourceOption> sourceOptions;
   final Future<String?> Function() onCreateFolder;
-  final Future<_FolderDialogOutcome?> Function(dynamic folder)
+  final Future<_FolderDialogOutcome?> Function(FolderView folder)
   onRequestFolderAction;
 
   @override
@@ -848,7 +849,7 @@ class _BookshelfFilterDialogState extends State<_BookshelfFilterDialog> {
   }
 
   Widget _buildFolderSection(BuildContext context) {
-    final List<dynamic> folderViews;
+    final List<FolderView> folderViews;
     if (_isFavoriteMode) {
       folderViews = FavoriteFolderService.listFolders();
     } else {
@@ -891,7 +892,7 @@ class _BookshelfFilterDialogState extends State<_BookshelfFilterDialog> {
     );
   }
 
-  Future<void> _handleFolderLongPress(dynamic folder) async {
+  Future<void> _handleFolderLongPress(FolderView folder) async {
     final outcome = await widget.onRequestFolderAction(folder);
     if (!mounted || outcome == null) {
       return;

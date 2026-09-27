@@ -89,7 +89,7 @@ Future<bool> toggleLocalComicFavorite({
 }
 
 Map<String, dynamic> _comicImageToMap(ComicImage image) {
-  return sanitizeDynamic({
+  return sanitizeMap({
     'id': image.id,
     'url': image.url,
     'name': image.name,
@@ -155,7 +155,7 @@ String _resolveImagePath({
 }
 
 Map<String, dynamic> _creatorToMap(Creator creator) {
-  return sanitizeDynamic({
+  return sanitizeMap({
     'id': creator.id,
     'name': creator.name,
     'avatar': _comicImageToMap(creator.avatar),
@@ -165,7 +165,7 @@ Map<String, dynamic> _creatorToMap(Creator creator) {
 }
 
 Map<String, dynamic> _titleMetaToMap(ComicInfoActionItem item) {
-  return sanitizeDynamic({
+  return sanitizeMap({
     'name': item.name,
     'onTap': item.onTap,
     'extern': item.extern,
@@ -173,7 +173,7 @@ Map<String, dynamic> _titleMetaToMap(ComicInfoActionItem item) {
 }
 
 Map<String, dynamic> _metadataToMap(ComicInfoMetadata item) {
-  return sanitizeDynamic({
+  return sanitizeMap({
     'name': item.name,
     'type': item.type,
     'value': item.value

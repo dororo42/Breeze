@@ -2,19 +2,23 @@ import 'package:zephyr/i18n/strings.g.dart';
 import 'package:zephyr/main.dart';
 import 'package:zephyr/object_box/model.dart';
 import 'package:zephyr/object_box/objectbox.g.dart';
+import 'package:zephyr/page/bookshelf/service/folder_view.dart';
 
 const String kDownloadFolderAllKey = 'all';
 const String _kDownloadFolderSourcePrefix = 'dl-folder:';
 
-class DownloadFolderView {
+class DownloadFolderView implements FolderView {
   const DownloadFolderView({
     required this.key,
     required this.name,
     this.isAll = false,
   });
 
+  @override
   final String key;
+  @override
   final String name;
+  @override
   final bool isAll;
 }
 

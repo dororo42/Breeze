@@ -11,7 +11,7 @@ part 'comic_simplify_entry_info.freezed.dart';
 part 'comic_simplify_entry_info.g.dart';
 
 ComicSimplifyEntryInfo comicSimplifyEntryInfoFromJson(String str) =>
-    ComicSimplifyEntryInfo.fromJson(json.decode(str));
+    ComicSimplifyEntryInfo.fromJson(json.decode(str) as Map<String, dynamic>);
 
 String comicSimplifyEntryInfoToJson(ComicSimplifyEntryInfo data) =>
     json.encode(data.toJson());
