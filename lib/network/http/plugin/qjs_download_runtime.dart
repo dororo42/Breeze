@@ -392,10 +392,10 @@ Future<String> loadQjsBundleJs(String pluginId) async {
 
   try {
     if (bundleUrl.split(".").last == "br") {
-      final response = await fetchDirect(bundleUrl);
+      final response = await fetchBundle(bundleUrl);
       return await decompressExtreme(data: response.body).let(utf8.decode);
     } else {
-      final response = await fetchDirect(bundleUrl);
+      final response = await fetchBundle(bundleUrl);
       final body = response.text;
       if (body.trim().isNotEmpty) {
         return body;

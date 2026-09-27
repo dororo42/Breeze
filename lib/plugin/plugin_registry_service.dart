@@ -698,7 +698,7 @@ class PluginRegistryService {
   Future<String> _resolveBundleJs(PluginRuntimeState plugin) async {
     if (plugin.debug && (plugin.debugUrl?.trim().isNotEmpty ?? false)) {
       try {
-        final response = await fetchDirect(plugin.debugUrl!.trim());
+        final response = await fetchBundle(plugin.debugUrl!.trim());
         final debugBundle = response.text;
         if (debugBundle.trim().isNotEmpty) {
           logger.d('[plugin-bundle] source=debugUrl plugin=${plugin.uuid}');

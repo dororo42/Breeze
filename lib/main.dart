@@ -52,7 +52,7 @@ import 'package:zephyr/widgets/desktop/custom_title_bar.dart';
 import 'package:zephyr/widgets/desktop/intent.dart';
 
 export 'package:zephyr/network/http/wind_http.dart'
-    show WindHttp, FetchResponse, fetch, fetchDirect;
+    show WindHttp, FetchResponse, fetch, fetchBundle;
 
 ObjectBox? _objectbox;
 ObjectBox get objectbox => _objectbox!;

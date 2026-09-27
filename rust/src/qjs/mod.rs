@@ -1091,10 +1091,9 @@ async fn load_bundle_js_from_url(bundle_url: &str) -> Result<String> {
         )));
     }
 
-    // 与全局 TLS 校验开关保持一致，规避 reqwest 0.13 在部分证书场景下的验证失败问题
-    let http_config = current_http_client_config();
+    // bundle 内容会被 QuickJS 当作可信代码直接执行，因此这里刻意不跟随全局 TLS 校验开关：
+    // 若沿用 disable_tls_verify，中间人替换响应即等于在 app 上下文里执行任意 JS。
     let client = reqwest::Client::builder()
-        .danger_accept_invalid_certs(http_config.disable_tls_verify)
         .build()
         .with_context(|| rquickjs_playground::tr!("failed-to-create-bundle-download-client"))?;
     let client = wrap_http_client(client);

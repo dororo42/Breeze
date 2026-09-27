@@ -51,20 +51,6 @@ class WindHttp {
     );
   }
 
-  /// 强制直连（忽略代理）。
-  factory WindHttp.direct({
-    Duration? connectTimeout,
-    Duration? receiveTimeout,
-    bool followRedirects = true,
-  }) {
-    return WindHttp(
-      connectTimeout: connectTimeout,
-      receiveTimeout: receiveTimeout,
-      followRedirects: followRedirects,
-      noProxy: true,
-    );
-  }
-
   String get baseUrl => _client.baseUrl();
 
   Map<String, String> get defaultHeaders => _client.defaultHeaders();
@@ -210,19 +196,12 @@ Future<FetchResponse> fetch(
   followRedirects: followRedirects,
 );
 
-/// 顶层直连 fetch：每次新建直连客户端。
-Future<FetchResponse> fetchDirect(
-  String url, {
-  String method = 'GET',
-  Map<String, String>? headers,
-  Object? body,
-  Map<String, dynamic>? query,
-  Duration? timeout,
-}) => WindHttp.direct().fetch(
-  url,
-  method: method,
-  headers: headers,
-  body: body,
-  query: query,
-  timeout: timeout,
-);
+/// 拉取插件 bundle（返回内容会被 QuickJS 当作可信代码直接执行）。
+///
+/// 刻意不跟随 `setTlsVerifyEnabled` 的全局开关：中间人替换响应即等于在 app
+/// 上下文里执行任意 JS，属于代码执行路径而非取数据路径。
+Future<FetchResponse> fetchBundle(String url, {Duration? timeout}) => WindHttp(
+  noProxy: true,
+  dangerAcceptInvalidCerts: false,
+  receiveTimeout: timeout,
+).fetch(url);
